@@ -1,0 +1,10 @@
+tiktoken
+networkx
+fastapi
+uvicorn
+openai
+sse-starlette
+GitPython
+PyPDF2
+matplotlib
+typer

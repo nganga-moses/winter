@@ -1,0 +1,9 @@
+{
+  "thinking": "Thinking...",
+  "analyzing": "Analyzing input...",
+  "planning": "Planning architecture...",
+  "building": "Building code...",
+  "reviewing": "Reviewing output...",
+  "saving": "Writing to disk...",
+  "done": "Done \u2705"
+}
