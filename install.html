@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Winter Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        @media (max-width: 480px) {
+            .glow-wrapper::before {
+                top: -20px;
+                left: -20px;
+                right: -20px;
+                bottom: -20px;
+                filter: blur(20px);
+            }
+
+            #root {
+                padding: 1.5rem;
+            }
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #2a2726;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f5f5f5;
+        }
+
+        .glow-wrapper {
+            position: relative;
+            padding: 3px; /* small buffer between glow and inner box */
+            border-radius: 20px;
+        }
+
+        .glow-wrapper::before {
+            content: "";
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            right: -30px;
+            bottom: -30px;
+            z-index: 0;
+            border-radius: 24px;
+           /* background: linear-gradient(
+                    135deg,
+                    #ffc400 0%,
+                    #ff9100 20%,
+                    #f8682f 40%,
+                    #e62c6d 70%,
+                    #b25aff 100%
+            );*/
+            filter: blur(35px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #root {
+            position: relative;
+            z-index: 1;
+            background: #151515;
+            padding: 2rem 2.5rem;
+            border-radius: 16px;
+            border: 1px solid transparent;
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 0 0 0 1px #1c1c1c, inset 0 0 12px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 500px;
+            background-image:
+                    linear-gradient(#0b0b0b, #0b0b0b),
+                    linear-gradient(135deg, #ffc400, #ff9100, #f8682f, #e62c6d, #b25aff);
+        }
+
+
+        .info-box {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.55);
+            border: 1px solid #6effa1;
+            border-radius: 6px;
+        }
+
+        .button {
+            background-color: #222;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #555;
+            border-radius: 6px;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+
+<body class="capra">
+<div class="glow-wrapper">
+    <div id="root"></div>
+</div>
+
+<script type="module" src="src/install/install.tsx"></script>
+</body>
+</html>

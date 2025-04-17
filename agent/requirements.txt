@@ -8,3 +8,4 @@ GitPython
 PyPDF2
 matplotlib
 typer
+python-multipart

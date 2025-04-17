@@ -28,6 +28,33 @@ class ProjectCreate(BaseModel):
     privacy: str  # "public" or "private"
 
 
+@router.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+
+@router.get("/projects")
+async def list_projects():
+    try:
+        projects = []
+        for project_id in os.listdir(PROJECTS_DIR):
+            project_path = os.path.join(PROJECTS_DIR, project_id)
+            meta_path = os.path.join(project_path, "meta.json")
+
+            if os.path.isdir(project_path) and os.path.exists(meta_path):
+                with open(meta_path, "r") as f:
+                    try:
+                        meta = json.load(f)
+                        meta["id"] = project_id  # ensure ID is included
+                        projects.append(meta)
+                    except json.JSONDecodeError:
+                        continue  # skip corrupt or partial projects
+
+        return {"projects": projects}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/projects")
 async def create_project(payload: ProjectCreate):
     project_id = f"project-{uuid.uuid4().hex[:8]}"

@@ -7,13 +7,21 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "build:sidecar-macos": "agent/venv/bin/pyinstaller main-x86_64-apple-darwin.spec --clean --noconfirm --distpath src-tauri/bundled",
+    "build:sidecar-winos": "pyinstaller agent/main.py -n main.exe -F --distpath src-tauri/bundled",
+    "build:sidecar-linux": "pyinstaller agent/main.py -n main -F --distpath src-tauri/bundled"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@monaco-editor/react": "^4.7.0",
+    "@supabase/supabase-js": "^2.49.4",
     "@tailwindcss/vite": "^4.1.2",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-os": "^2.2.1",
+    "@tauri-apps/plugin-shell": "^2.2.1",
+    "@tauri-apps/plugin-store": "^2.2.0",
+    "@tauri-apps/plugin-window": "^2.0.0-alpha.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",

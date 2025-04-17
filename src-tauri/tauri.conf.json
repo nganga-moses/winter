@@ -9,22 +9,57 @@
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
-
   "app": {
-    "windows": [
-      {
-        "title": "Winter",
-        "width": 800,
-        "height": 600
+   "windows": [
+     {
+       "label": "install",
+       "url": "install.html",
+       "title": "",
+      "fullscreen": false,
+       "resizable": false,
+       "width": 640,
+       "height": 400,
+       "visible": true
+     },
+     {
+       "label": "splashscreen",
+       "url": "splashscreen.html",
+       "visible": false,
+       "decorations": false,
+       "fullscreen": false,
+       "resizable": false,
+       "width": 640,
+       "height": 400,
+       "alwaysOnTop": true
+     },
+     {
+        "label": "main",
+        "url": "index.html",
+        "title":"",
+        "width": 1024,
+        "height": 768,
+        "decorations": true,
+        "transparent": false,
+        "resizable": true,
+        "theme": "Dark",
+        "visible": false
       }
     ],
     "security": {
       "csp": null
     }
+
+  },
+  "plugins": {
+    "splashscreen": {
+      "enabled": true,
+      "image": "icons/splashscreen.jpg",
+      "fullscreen": false
+    }
   },
   "bundle": {
     "active": true,
-    "resources": ["../src-tauri/bundled/winter-agent"],
+    "externalBin": ["../src-tauri/bundled/main"],
     "targets": "all",
     "icon": [
       "icons/32x32.png",

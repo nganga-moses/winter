@@ -28,7 +28,7 @@ const ProjectModal = ({ onClose, onSave, project }: ProjectModalProps) => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSaving, setIsSaving] = useState(false);
     const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-    const apiUrl = import.meta.env.VITE_API_URL;
+    const apiUrl = (window as any).__API_URL__ || 'http://127.0.0.1:6144';
     const token = localStorage.getItem("token");
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
