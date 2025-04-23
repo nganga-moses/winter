@@ -1,3 +1,14 @@
-pub mod job_card;
-pub mod protocol;
+pub mod orchestrator;
 pub mod registry;
+pub mod protocol;
+pub mod types;
+pub mod agent_loader;
+pub mod tool_loader;
+pub mod context;
+pub mod task_log;
+pub mod logging;
+pub mod task_index;
+pub mod feedback;
+pub mod utils;
+pub mod planning;
+pub mod hash;

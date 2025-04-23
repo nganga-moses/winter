@@ -7,7 +7,7 @@ use std::{
     time::Duration,
 };
 
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_shell::ShellExt;
 use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use portpicker::pick_unused_port;
@@ -23,8 +23,10 @@ mod model_installer;
 mod llama_wrapper;
 mod model_registry;
 mod disk;
+mod agents;
 
 use crate::config::*;
+use crate::agents::orchestrator::orchestrator::Orchestrator;
 use model_selector::ModelChoice;
 use model_registry::get_model_download_info;
 use model_downloader::{
@@ -41,9 +43,47 @@ use model_installer::{
 };
 use mode_manager::{get_current_mode, set_current_mode};
 use llama_wrapper::run_llama_inference;
+use uuid::uuid;
+use crate::agents::memory::task_memory::{TaskMemory, TaskMemoryHandle};
+use crate::agents::memory::session_memory::{SessionMemory, SessionMemoryHandle};
+use crate::agents::memory::project_memory::ProjectMemoryHandle;
+use crate::agents::memory::global_memory::GlobalMemoryHandle;
+use crate::agents::memory::planner_memory::PlannerMemory;
+use crate::agents::orchestrator::protocol::AgentResponse;
+use crate::agents::orchestrator::types::AgentTask;
+use crate::agents::orchestrator::agent_loader::register_all_agents;
+use crate::agents::orchestrator::context::AgentContext;
+use crate::agents::orchestrator::tool_loader::register_all_tools;
+use crate::agents::tools::registry::ToolRegistry;
 
 struct BackendState(pub Arc<Mutex<Option<CommandChild>>>);
 static ONCE_INIT: OnceLock<()> = OnceLock::new();
+
+#[tauri::command]
+pub fn run_orchestrator_task(
+    task_type: String,
+    payload: String,
+    orchestrator: State<'_, Orchestrator>
+) -> Result<String,String>{
+
+    let (orchestrator, context) = setup_orchestrator();
+
+    let task = AgentTask{
+        task_id: uuid::Uuid::new_v4().to_string(),
+        task_type,
+        payload,
+        context: AgentTaskContext{
+            origin: "user".into(),
+            goal_id: None,
+            parent_task_id: None,
+            retry_of: None,
+        },
+    };
+    match orchestrator.handle(task,context) {
+        AgentResponse::Success(output) => Ok(output.content.to_string()),
+        AgentResponse::Error(err)=> Err(err),
+    }
+}
 
 #[tauri::command]
 fn list_project_files(project_path: String) -> Result<Vec<String>, String> {
@@ -198,6 +238,26 @@ fn shutdown_sidecar(app_handle: AppHandle) -> Result<String, String> {
     }
 }
 
+pub fn setup_orchestrator() -> (Orchestrator, AgentContext) {
+    let mut orchestrator = Orchestrator::new();
+    let mut raw_tool_registry = ToolRegistry::new();
+
+    // Register tools before creating context
+    register_all_tools(&mut raw_tool_registry);
+    register_all_agents(&mut orchestrator);
+
+    let context = AgentContext {
+        task: TaskMemoryHandle::new(),
+        session: SessionMemoryHandle::new(),
+        project: ProjectMemoryHandle::new(),
+        global: GlobalMemoryHandle::new(),
+        tool_registry: Arc::new(raw_tool_registry), // Now fully initialized
+        planner_memory: PlannerMemory::new(),
+    };
+
+    (orchestrator, context)
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -252,6 +312,9 @@ fn main() {
             println!("[tauri] Spawning backend on port: {}", port);
             app.manage(BackendState(Arc::new(Mutex::new(None))));
             app.manage(port);
+
+            // Startup Orchestrator
+            let orchestrator = setup_orchestrator();
 
            // spawn_and_monitor_embedded_server(app.handle().clone(), port)?;
             Ok(())

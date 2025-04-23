@@ -1,26 +1,44 @@
 use  std::collections::HashMap;
-use super::job_card::AgentJobCard;
+use crate::agents::orchestrator::protocol::AgentResponse;
+use crate::agents::orchestrator::types::{AgentCard, AgentTask, Capability};
+use crate::agents::orchestrator::context::AgentContext;
 
-#[derive(Default)]
+/// Trait implemented by all agent handlers
+pub trait AgentHandler{
+    fn handle_task(&self, task: AgentTask, ctx: AgentContext) -> AgentResponse;
+}
+
+/// Full metadata about a registered Agent
+pub struct AgentMetadata{
+    pub card: AgentCard,
+    pub handler: Box<dyn AgentHandler + Send + Sync>
+}
+
+/// Stores all agents that can be routed to
 pub struct AgentRegistry{
-    agents: HashMap<String, AgentJobCard>,
+    agents: Vec<AgentMetadata>,
 }
 
 impl AgentRegistry{
     pub fn new()-> Self{
         Self{
-            agents: HashMap::new()
+            agents: vec![]
         }
     }
-    pub fn register(&mut self,card:AgentJobCard){
-        self.agents.insert(card.name.clone(),card);
+    pub fn register(&mut self,agent_card: AgentCard, handler: Box<dyn AgentHandler + Send + Sync>){
+        self.agents.push(AgentMetadata{card:agent_card, handler});
+    }
+    /// Structured and deterministic capability matching
+    pub fn find_agent_for_task(&self, task_type: &Capability)-> Option<&AgentMetadata>{
+        self.agents
+            .iter()
+            .find(|agent| {
+                let skills =&agent.card.skills;
+                skills.root == *task_type || skills.subskills.contains(task_type)
+            })
+    }
+    pub fn all_cards(&self)-> Vec<AgentCard> {
+        self.agents.iter().map(|m| m.card.clone()).collect()
     }
 
-    pub fn list(&self)-> Vec<AgentJobCard>{
-        self.agents.values().collect()
-    }
-
-    pub fn get(&self, name: &str)-> Option<&AgentJobCard>{
-        self.agents.get(name)
-    }
 }

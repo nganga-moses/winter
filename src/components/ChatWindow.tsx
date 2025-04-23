@@ -152,22 +152,22 @@ const ChatWindow: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-gray-900 border-l border-gray-700">
+        <div className="flex flex-col h-full bg-[#1E1E1E]">
             {/* Title Bar */}
-            <div className="h-10 bg-gray-800/70 backdrop-blur px-4 flex items-center" data-tauri-drag-region>
-                <FaRobot className="text-gray-400 mr-2" />
-                <span className="text-sm text-gray-300 font-semibold">Leo</span>
-                {statusLabel && <span className="ml-auto text-xs text-blue-400 animate-pulse">{statusLabel}</span>}
+            <div className="h-10 bg-[#252526] px-4 flex items-center border-b border-[#333333]" data-tauri-drag-region>
+                <FaRobot className="text-[#007ACC] mr-2" />
+                <span className="text-sm text-[#CCCCCC] font-medium">Leo</span>
+                {statusLabel && <span className="ml-auto text-xs text-[#007ACC] animate-pulse">{statusLabel}</span>}
             </div>
 
             {/* Threads */}
-            <div className="flex space-x-2 px-4 py-2 overflow-x-auto text-sm border-b border-gray-700 bg-gray-800">
+            <div className="flex space-x-2 px-4 py-2 overflow-x-auto text-sm border-b border-[#333333] bg-[#252526]">
                 {threads.map((thread) => (
                     <button
                         key={thread.id}
                         onClick={() => setActiveThreadId(thread.id)}
-                        className={`px-2 py-1 rounded ${
-                            thread.id === activeThreadId ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
+                        className={`px-2 py-1 rounded text-xs ${
+                            thread.id === activeThreadId ? "bg-[#007ACC] text-white" : "bg-[#333333] text-[#CCCCCC]"
                         }`}
                     >
                         {thread.summary || "Unnamed"}
@@ -176,7 +176,7 @@ const ChatWindow: React.FC = () => {
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 px-4 py-2 overflow-y-auto space-y-3 text-sm">
+            <div className="flex-1 px-4 py-2 overflow-y-auto space-y-4">
                 {messages
                     .filter((msg) => msg.threadId === activeThreadId)
                     .map((msg, i) => (
@@ -187,22 +187,28 @@ const ChatWindow: React.FC = () => {
             </div>
 
             {/* Input */}
-            <div className="flex items-center border-t border-gray-700 p-2 bg-gray-900">
-                <input
-                    type="text"
-                    placeholder="Ask Leo anything..."
-                    className="flex-1 bg-gray-800 text-white px-3 py-2 rounded outline-none"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyUp={(e) => e.key === "Enter" && sendMessage()}
-                />
-                <button
-                    onClick={sendMessage}
-                    className="ml-3 text-blue-400 text-2xl"
-                    disabled={isStreaming || !input.trim()}
-                >
-                    {isStreaming ? <FaSpinner className="animate-spin" /> : <FaArrowCircleUp />}
-                </button>
+            <div className="p-4 border-t border-[#333333] bg-[#252526]">
+                <div className="flex items-center bg-[#333333] rounded-lg">
+                    <input
+                        type="text"
+                        placeholder="Ask Leo anything..."
+                        className="flex-1 bg-transparent text-[#CCCCCC] px-4 py-3 rounded-lg outline-none"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyUp={(e) => e.key === "Enter" && sendMessage()}
+                    />
+                    <button
+                        onClick={sendMessage}
+                        className="p-2 text-[#007ACC] hover:text-[#0098FF] disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isStreaming || !input.trim()}
+                    >
+                        {isStreaming ? (
+                            <FaSpinner className="animate-spin" />
+                        ) : (
+                            <FaArrowCircleUp className="text-xl" />
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
     );
