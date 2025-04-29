@@ -16,45 +16,40 @@ use tauri::Listener;
 use tauri::Emitter;
 
 mod config;
-mod mode_manager;
-mod model_selector;
-mod model_downloader;
-mod model_installer;
-mod llama_wrapper;
-mod model_registry;
-mod disk;
+mod model;
 mod agents;
+pub mod orchestrator;
 
 use crate::config::*;
-use crate::agents::orchestrator::orchestrator::Orchestrator;
-use model_selector::ModelChoice;
-use model_registry::get_model_download_info;
-use model_downloader::{
+use crate::orchestrator::orchestrator::Orchestrator;
+use crate::model::model_selector::ModelChoice;
+use crate::model::model_downloader::{
     download_model_file,
     estimate_model_file_size,
     cancel_model_download,
 };
-use disk::get_free_disk_space;
-use model_installer::{
+use crate::model::disk::get_free_disk_space;
+use crate::model::model_installer::{
     install_model,
     cancel_model_install,
     check_model_ready,
     ModelStatus,
 };
-use mode_manager::{get_current_mode, set_current_mode};
-use llama_wrapper::run_llama_inference;
+use crate::model::model_manager::{get_current_mode, set_current_mode};
+use crate::model::llama_wrapper::run_llama_inference;
 use uuid::uuid;
-use crate::agents::memory::task_memory::{TaskMemory, TaskMemoryHandle};
-use crate::agents::memory::session_memory::{SessionMemory, SessionMemoryHandle};
-use crate::agents::memory::project_memory::ProjectMemoryHandle;
-use crate::agents::memory::global_memory::GlobalMemoryHandle;
-use crate::agents::memory::planner_memory::PlannerMemory;
-use crate::agents::orchestrator::protocol::AgentResponse;
-use crate::agents::orchestrator::types::AgentTask;
-use crate::agents::orchestrator::agent_loader::register_all_agents;
-use crate::agents::orchestrator::context::AgentContext;
-use crate::agents::orchestrator::tool_loader::register_all_tools;
-use crate::agents::tools::registry::ToolRegistry;
+use winter_ui_lib::tools::registry::ToolRegistry;
+use crate::memory::task_memory::{TaskMemory, TaskMemoryHandle};
+use crate::memory::session_memory::{SessionMemory, SessionMemoryHandle};
+use crate::memory::project_memory::ProjectMemoryHandle;
+use crate::memory::global_memory::GlobalMemoryHandle;
+use crate::memory::planner_memory::PlannerMemory;
+use crate::orchestrator::protocol::AgentResponse;
+use crate::orchestrator::types::AgentTask;
+use crate::orchestrator::agent_loader::register_all_agents;
+use crate::orchestrator::context::AgentContext;
+use crate::orchestrator::tool_loader::register_all_tools;
+use crate::tools::registry::ToolRegistry;
 
 struct BackendState(pub Arc<Mutex<Option<CommandChild>>>);
 static ONCE_INIT: OnceLock<()> = OnceLock::new();

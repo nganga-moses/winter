@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src-tauri/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/src-tauri/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src-tauri/src/prompts/prompts" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

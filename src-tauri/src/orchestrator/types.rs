@@ -31,7 +31,17 @@ pub enum Capability{
     Research,
     Reasoning,
     Clarification,
-    Greeting
+    Greeting,
+    Requirements,
+    Architecture,
+    Testing,
+    Refactoring,
+    Documentation,
+    Scaffolding,
+    Deployment,
+    Security,
+    RepoAnalysis,
+    Critique,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -53,11 +63,12 @@ pub struct AgentCard{
 /// Enables skill matching, dependency resolution, and graph traversal
 #[derive(Debug,Clone, Serialize, Deserialize)]
 pub struct SkillGraph {
-    pub root: Capability,
-    pub subskills: Vec<Capability>,
     /// NOTE: This will be refactored in Phase 4 to a HashMap-based graph for introspection,
     /// subskill matching, and agent chaining. This simplified version keeps capability
     /// matching clean while Winter operates in single-layer mode.
+    pub root: Capability,
+    pub subskills: Vec<Capability>,
+
 }
 #[derive(Debug,Clone)]
 pub enum TaskStatus{

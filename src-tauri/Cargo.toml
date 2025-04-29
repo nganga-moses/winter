@@ -1,6 +1,6 @@
 [package]
 name = "Winter"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Native AI Agent"
 authors = ["maxx Ng'ang'a"]
 edition = "2021"
@@ -36,3 +36,5 @@ sysinfo = { version = "0.34.2",features = ["disk"] }
 log = "0.4.27"
 uuid = { version = "1.16.0", features = ["v4"] }
 async-trait = "0.1.88"
+futures = "0.3.31"
+anyhow = "1.0.97"

@@ -1,7 +1,7 @@
 use  std::collections::HashMap;
-use crate::agents::orchestrator::protocol::AgentResponse;
-use crate::agents::orchestrator::types::{AgentCard, AgentTask, Capability};
-use crate::agents::orchestrator::context::AgentContext;
+use crate::orchestrator::protocol::AgentResponse;
+use crate::orchestrator::types::{AgentCard, AgentTask, Capability};
+use crate::orchestrator::context::AgentContext;
 
 /// Trait implemented by all agent handlers
 pub trait AgentHandler{

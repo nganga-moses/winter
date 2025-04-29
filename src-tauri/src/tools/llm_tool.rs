@@ -1,14 +1,14 @@
-use crate::agents::orchestrator::protocol::{ToolReturn, ToolStatus};
-use crate::agents::tools::tool::Tool;
+use crate::orchestrator::protocol::{ToolReturn, ToolStatus};
+use crate::tools::tool::Tool;
 use async_trait::async_trait;
 use serde_json::{json, Value};
 
-pub struct LLMPlannerTool;
+pub struct LLMTool;
 
 #[async_trait]
-impl Tool for LLMPlannerTool {
+impl Tool for LLMTool {
     fn name(&self) -> &'static str {
-        "llm_planner"
+        "llm_tool"
     }
 
     fn description(&self) -> &'static str {

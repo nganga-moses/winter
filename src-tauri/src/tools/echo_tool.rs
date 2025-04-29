@@ -1,6 +1,6 @@
 use serde_json::{json, Value};
-use crate::agents::orchestrator::protocol::ToolStatus;
-use crate::agents::tools::tool::{Tool, ToolReturn};
+use crate::orchestrator::protocol::{ToolReturn, ToolStatus};
+use crate::tools::tool::{Tool};
 
 pub struct EchoTool;
 

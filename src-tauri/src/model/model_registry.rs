@@ -2,7 +2,7 @@ use crate::config::{AppConfig, AppPaths, load_config, save_config,ModelDownloadI
 
 #[tauri::command]
 pub fn get_model_download_info() -> ModelDownloadInfo {
-    let choice = crate::model_selector::pick_optimal_model();
+    let choice = crate::model::model_selector::pick_optimal_model();
 
     let info = match choice.model_name.as_str() {
         "mistral" => ModelDownloadInfo {

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use serde_json::Value;
 use serde::{Serialize,Deserialize};
-use crate::agents::orchestrator::protocol::ToolReturn;
+
 
 /// Tools take structured JSON input and return structured JSON output.
 #[async_trait]

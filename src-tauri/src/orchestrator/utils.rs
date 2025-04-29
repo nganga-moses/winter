@@ -12,3 +12,10 @@ pub fn retry_depth(task: &AgentTask, memory: &TaskMemory) -> usize{
     }
     depth
 }
+pub fn write_json_to_project_file(path: &str, data: &serde_json::Value) -> std::io::Result<()> {
+    let base = dirs::home_dir().unwrap().join("WinterData/project");
+    std::fs::create_dir_all(&base)?;
+    let full = base.join(path);
+    std::fs::write(full, serde_json::to_string_pretty(data)?)?;
+    Ok(())
+}

@@ -1,27 +1,28 @@
-use crate::agents::memory::planner_memory::{PlannerMemory, PlannerMemoryEntry};
-use crate::agents::memory::session_memory::SessionMemoryHandle;
-use crate::agents::memory::task_memory::TaskMemoryHandle;
-use crate::agents::memory::{
-    global_memory::GlobalMemoryHandle, project_memory::ProjectMemoryHandle,
+use crate::memory::planner_memory::{PlannerMemory, PlannerMemoryEntry};
+use crate::memory::runtime_memory::DesignDecision;
+use crate::memory::session_memory::SessionMemoryHandle;
+use crate::memory::task_memory::TaskMemoryHandle;
+use crate::memory::{
+    global_memory::GlobalMemoryHandle, project_memory::ProjectMemory,
     session_memory::SessionMemory, task_memory::TaskMemory,
 };
-use crate::agents::orchestrator::context::AgentContext;
-use crate::agents::orchestrator::feedback::load_feedback_queue;
-use crate::agents::orchestrator::protocol::{
+use crate::orchestrator::context::AgentContext;
+use crate::orchestrator::feedback::load_feedback_queue;
+use crate::orchestrator::hash::calculate_plan_hash;
+use crate::orchestrator::protocol::{
     AgentError, AgentOutput, AgentResponse, PlannerOutput,
 };
-use crate::agents::orchestrator::registry::{AgentHandler, AgentMetadata, AgentRegistry};
-use crate::agents::orchestrator::task_index::{append_to_task_index, TaskIndexEntry};
-use crate::agents::orchestrator::task_log::write_task_log;
-use crate::agents::orchestrator::types::{
+use crate::orchestrator::registry::{AgentHandler, AgentMetadata, AgentRegistry};
+use crate::orchestrator::task_index::{append_to_task_index, TaskIndexEntry};
+use crate::orchestrator::task_log::write_task_log;
+use crate::orchestrator::timeline::{append_timeline_event, TimelineEvent};
+use crate::orchestrator::types::{
     now_timestamp, AgentCard, AgentTask, AgentTaskContext, Capability, TaskStatus,
 };
-use crate::agents::tools::registry::ToolRegistry;
+use crate::tools::registry::ToolRegistry;
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::{uuid, Uuid};
-use crate::agents::memory::project_memory::DesignDecision;
-use crate::agents::orchestrator::hash::calculate_plan_hash;
 
 const MAX_RETRIES: usize = 3;
 const MAX_PLANNER_REVISIONS: u8 = 3;
@@ -43,7 +44,7 @@ impl Orchestrator {
             tool_registry: Arc::new(ToolRegistry::new()),
             task_memory: TaskMemory::new(),
             session_memory: SessionMemory::new(),
-            project_memory: ProjectMemoryHandle::default(),
+            project_memory: ProjectMemory::default(),
             global_memory: GlobalMemoryHandle::default(),
         }
     }
@@ -159,8 +160,8 @@ impl Orchestrator {
                             };
                             ctx.planner_memory.add_entry(&entry.goal_id, entry);
 
-                            let decision = DesignDecision{
-                                id: format!("plan-{}",plan.plan_id),
+                            let decision = DesignDecision {
+                                id: format!("plan-{}", plan.plan_id),
                                 summary: format!(
                                     "Planner used {:?} strategy with score {}",
                                     plan.strategy_used,
@@ -171,7 +172,7 @@ impl Orchestrator {
                                 timestamp: now_timestamp().to_string(),
                             };
                             ctx.project.lock().unwrap().write_decision(decision);
-                            
+
                             self.execute_task_graph(plan.task_graph, ctx.clone())
                         }
                         AgentResponse::Error(err) => {
@@ -237,7 +238,16 @@ impl Orchestrator {
         };
 
         let _ = append_to_task_index(&index_entry);
-
+        append_timeline_event(
+            &task.context.goal_id.clone().unwrap_or("unknown".into()),
+            TimelineEvent::Task {
+                task_id: task.task_id.clone(),
+                task_type: task.task_type.clone(),
+                status: format!("{:?}", task.status),
+                agent_id: agent.card.id.clone(),
+                timestamp: now_timestamp(),
+            },
+        );
         response
     }
     pub fn execute_reviewed_plan(

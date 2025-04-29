@@ -1,6 +1,8 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use tokio::fs;
+use crate::agents::orchestrator::timeline::append_timeline_event;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DesignDecision {
@@ -13,6 +15,7 @@ pub struct DesignDecision {
 
 #[derive(Debug, Default)]
 pub struct ProjectMemoryInner {
+    pub goal_id: Option<String>,
     pub architecture: Option<String>,
     pub decisions: Vec<DesignDecision>,
     pub file_summaries: HashMap<String, String>,
@@ -39,6 +42,7 @@ impl ProjectMemoryHandle {
         if let Ok(mut inner) = self.0.lock() {
             inner.decisions.push(decision);
         }
+
     }
 
     pub fn update_file_summary(&self, path: &str, summary: &str) {
@@ -47,7 +51,9 @@ impl ProjectMemoryHandle {
         }
     }
 
+
     pub fn all(&self) -> Option<ProjectMemoryInner> {
         self.0.lock().ok().map(|inner| inner.clone())
     }
 }
+
